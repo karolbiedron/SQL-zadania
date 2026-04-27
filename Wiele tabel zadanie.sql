@@ -1,0 +1,126 @@
+USE wiele_tabel_zadanie;
+
+SELECT c.*
+FROM customer c
+JOIN orders o ON c.CUST_CODE = o.CUST_CODE
+WHERE o.ORD_DATE = '2008-01-08';
+
+SELECT 
+  a.AGENT_NAME,
+  c.CUST_NAME,
+  c.WORKING_AREA
+FROM agents a
+JOIN customer c ON a.AGENT_CODE = c.AGENT_CODE;
+
+SELECT
+c.CUST_NAME,
+a.AGENT_NAME AS Salesman
+FROM customer c
+INNER JOIN agents a
+ON c.AGENT_CODE = a.AGENT_CODE
+WHERE a.COMMISSION > 0.12;
+
+SELECT
+o.ORD_NUM,
+o.ORD_DATE,
+o.ORD_AMOUNT,
+c.CUST_NAME AS "Customer Name",
+a.AGENT_NAME AS Salesman,
+a.COMMISSION
+FROM orders o
+INNER JOIN customer c ON o.CUST_CODE = c.CUST_CODE
+INNER JOIN agents a ON o.AGENT_CODE = a.AGENT_CODE;
+
+SELECT 
+  c.CUST_CODE,
+  c.CUST_NAME,
+  a.AGENT_CODE,
+  a.AGENT_NAME AS Salesman,
+  c.WORKING_AREA
+FROM customer c
+LEFT JOIN agents a ON c.AGENT_CODE = a.AGENT_CODE
+ORDER BY c.CUST_CODE;
+
+SELECT 
+  a.AGENT_CODE,
+  a.AGENT_NAME AS Salesman,
+  a.WORKING_AREA
+FROM customer c
+RIGHT JOIN agents a ON c.AGENT_CODE = a.AGENT_CODE
+ORDER BY a.AGENT_CODE;
+
+SELECT
+a.AGENT_NAME,
+c.CUST_NAME
+FROM agents a 
+CROSS JOIN customer c;
+
+SELECT
+a.AGENT_NAME,
+c.CUST_NAME
+FROM agents a
+CROSS JOIN customer c
+WHERE a.WORKING_AREA = c.WORKING_AREA;
+
+SELECT
+a.AGENT_NAME,
+c.CUST_NAME
+FROM agents a
+CROSS JOIN customer c
+WHERE a.WORKING_AREA <> c.WORKING_AREA
+AND c.GRADE IS NOT NULL;
+
+SELECT
+AGENT_CODE AS ID,
+AGENT_NAME,
+'Salesman' AS Rodzaj
+FROM agents
+WHERE 
+WORKING_AREA = 'London'
+
+UNION
+
+SELECT
+CUST_CODE AS ID,
+CUST_NAME,
+'Customer' AS Rodzaj
+FROM customer
+WHERE
+CUST_CITY = 'London';
+
+SELECT
+ORD_DATE,
+MAX(ORD_AMOUNT) AS max_order,
+MIN(ORD_AMOUNT) AS min_order
+FROM orders
+GROUP BY ORD_DATE;
+
+WITH londonstaff AS (
+SELECT *
+FROM agents
+WHERE WORKING_AREA = 'London'
+AND COMMISSION > 0.14
+)
+SELECT* FROM londonstaff;
+
+WITH gradecount AS (
+SELECT
+GRADE,
+COUNT(*) AS number
+FROM customer
+GROUP BY GRADE
+)
+SELECT * FROM gradecount;
+
+WITH total_per_dzien AS (
+SELECT
+ORD_DATE,
+COUNT(DISTINCT CUST_CODE) AS customers,
+AVG(ORD_AMOUNT) AS average_amount,
+SUM(ORD_AMOUNT) AS total_amount
+FROM orders
+GROUP BY ORD_DATE
+)
+SELECT *
+FROM total_per_dzien;
+
